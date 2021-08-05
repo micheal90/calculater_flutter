@@ -1,5 +1,6 @@
 import 'package:calculator/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 class CalculatorScreen extends StatefulWidget {
   CalculatorScreen({Key? key}) : super(key: key);
@@ -15,15 +16,62 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   String? number1;
   String? number2;
-  String? result;
+  String? finalResult;
   String? input = '';
-  void onPressed(String value) {
+
+  //with math package
+  String equation = "0";
+  String result = "0";
+  String expression = "";
+
+  onPressed2(String buttonText) {
+    // print(buttonText);
+    setState(() {
+      if (buttonText == "c") {
+        equation = "0";
+        result = "0";
+        _inputController.text = '';
+        _resultController.text = '';
+      } else if (buttonText == "backSpace") {
+        equation = equation.substring(0, equation.length - 1);
+        if (equation == "") {
+          equation = "0";
+        }
+      } else if (buttonText == "=") {
+        expression = equation;
+        expression = expression.replaceAll('×', '*');
+        expression = expression.replaceAll('÷', '/');
+
+        try {
+          Parser p = Parser();
+          Expression exp = p.parse(expression);
+
+          ContextModel cm = ContextModel();
+          result = '${exp.evaluate(EvaluationType.REAL, cm)}';
+          _resultController.text = result;
+        } catch (e) {
+          result = "Error";
+          _resultController.text = result;
+        }
+      } else {
+        if (equation == "0") {
+          equation = buttonText;
+        } else {
+          equation = equation + buttonText;
+        }
+        _inputController.text = equation;
+      }
+    });
+  }
+
+  //without package
+  void onPressed1(String value) {
     if (value == 'c') {
       _inputController.text = '';
       _resultController.text = '';
       number1 = '';
       number2 = '';
-      result = '';
+      finalResult = '';
       input = '';
     } else if (value == 'backSpace') {
       if (input != null && input!.length > 0) {
@@ -32,11 +80,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       }
     } else if (value == '=') {
       if (input!.isEmpty) {
-        result = 'Error';
-        _resultController.text = result!;
+        finalResult = 'Error';
+        _resultController.text = finalResult!;
       } else {
-        result = outputResult();
-        _resultController.text = result!;
+        finalResult = outputResult();
+        _resultController.text = finalResult!;
       }
     } else {
       input = input! + value;
@@ -126,19 +174,19 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           buttonText: 'C',
                           buttonColor: Colors.grey.shade200,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('c'),
+                          onPressed: () => onPressed2('c'),
                         ),
                         ButtonWidget(
                           buttonText: '÷',
                           buttonColor: Colors.grey.shade200,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('÷'),
+                          onPressed: () => onPressed2('÷'),
                         ),
                         ButtonWidget(
                           buttonText: '×',
                           buttonColor: Colors.grey.shade200,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('×'),
+                          onPressed: () => onPressed2('×'),
                         ),
                       ]),
                       TableRow(children: [
@@ -146,19 +194,19 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           buttonText: '7',
                           buttonColor: Colors.white,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('7'),
+                          onPressed: () => onPressed2('7'),
                         ),
                         ButtonWidget(
                           buttonText: '8',
                           buttonColor: Colors.white,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('8'),
+                          onPressed: () => onPressed2('8'),
                         ),
                         ButtonWidget(
                           buttonText: '9',
                           buttonColor: Colors.white,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('9'),
+                          onPressed: () => onPressed2('9'),
                         ),
                       ]),
                       TableRow(children: [
@@ -166,19 +214,19 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           buttonText: '4',
                           buttonColor: Colors.white,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('4'),
+                          onPressed: () => onPressed2('4'),
                         ),
                         ButtonWidget(
                           buttonText: '5',
                           buttonColor: Colors.white,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('5'),
+                          onPressed: () => onPressed2('5'),
                         ),
                         ButtonWidget(
                           buttonText: '6',
                           buttonColor: Colors.white,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('6'),
+                          onPressed: () => onPressed2('6'),
                         ),
                       ]),
                       TableRow(children: [
@@ -186,19 +234,19 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           buttonText: '1',
                           buttonColor: Colors.white,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('1'),
+                          onPressed: () => onPressed2('1'),
                         ),
                         ButtonWidget(
                           buttonText: '2',
                           buttonColor: Colors.white,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('2'),
+                          onPressed: () => onPressed2('2'),
                         ),
                         ButtonWidget(
                           buttonText: '3',
                           buttonColor: Colors.white,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('3'),
+                          onPressed: () => onPressed2('3'),
                         ),
                       ]),
                       TableRow(children: [
@@ -206,19 +254,19 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           buttonText: '%',
                           buttonColor: Colors.grey.shade200,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('%'),
+                          onPressed: () => onPressed2('%'),
                         ),
                         ButtonWidget(
                           buttonText: '0',
                           buttonColor: Colors.white,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('0'),
+                          onPressed: () => onPressed2('0'),
                         ),
                         ButtonWidget(
                           buttonText: '.',
                           buttonColor: Colors.grey.shade200,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('.'),
+                          onPressed: () => onPressed2('.'),
                         ),
                       ]),
                     ],
@@ -237,7 +285,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           ),
                           buttonColor: Colors.grey.shade200,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('backSpace'),
+                          onPressed: () => onPressed2('backSpace'),
                         ),
                       ]),
                       TableRow(children: [
@@ -245,7 +293,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           buttonText: '-',
                           buttonColor: Colors.grey.shade200,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('-'),
+                          onPressed: () => onPressed2('-'),
                         ),
                       ]),
                       TableRow(children: [
@@ -253,7 +301,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           buttonText: '+',
                           buttonColor: Colors.grey.shade200,
                           buttonHeight: 1,
-                          onPressed: () => onPressed('+'),
+                          onPressed: () => onPressed2('+'),
                         ),
                       ]),
                       TableRow(children: [
@@ -261,7 +309,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           buttonText: '=',
                           buttonColor: Colors.grey.shade200,
                           buttonHeight: 2,
-                          onPressed: () => onPressed('='),
+                          onPressed: () => onPressed2('='),
                         ),
                       ]),
                     ],
